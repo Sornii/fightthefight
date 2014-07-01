@@ -1,7 +1,9 @@
 package ftf.persistencia;
 
 import ftf.modelo.ModelBase;
+import ftf.persistencia.util.CampoValor;
 import ftf.persistencia.util.ClassUtil;
+import static ftf.persistencia.util.ClassUtil.getCamposValores;
 import ftf.persistencia.util.ComandosSqlUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,65 +12,45 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class BaseService<T extends ModelBase> {
 
-    private final ConexaoDatabase conexaoDatabase = new ConexaoDatabase();
+    private final Connection connection = ConexaoDatabase.getConnection();
     private final Class<T> thisClass;
 
     protected BaseService(Class<T> thisClass) {
         this.thisClass = thisClass;
     }
 
-    private Connection abrirConexao() {
-        try {
-            return conexaoDatabase.getConnection();
-        } catch (SQLException ex) {
-            System.out.println("Não foi possível conectar ao banco de dados.");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Não foi possível encontrar a classe para o banco de dados.");
-        }
-        return null;
-    }
-    
-    private void fecharConexao(Connection connection){
-        if(connection != null){
-            try {
-                connection.close();
-            } catch (Exception e) {
-            }
-        }
-    }
-
     public void salvar(T value) {
-        List<Field> fields = ClassUtil.getCampos(thisClass);
 
-        String campos = getNomesCampos(fields);
-        String valores = getValores(fields, value);
+        List<CampoValor> camposValores = ClassUtil.getCamposValores(value);
+
+        String[] campoValor = getInsertValores(value);
+        String campo = campoValor[0];
+        String valor = campoValor[1];
 
         String comando = ComandosSqlUtil.SQL_INSERT.getComando();
-        String format = String.format(comando, getNomeTabela(), campos, valores);
+        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass), campo, valor);
         System.out.println(format);
 
-        Connection conexao = abrirConexao();
         T auxValue = getUnico(value.getId());
-
+        
         try {
             if (auxValue != null) {
                 String comandoUpdate = ComandosSqlUtil.SQL_UPDATE.getComando();
-                String formatUpdate = String.format(comandoUpdate, getNomeTabela(), getUpdateNomesCampos(fields, value), value.getId());
+                String formatUpdate = String.format(comandoUpdate, ClassUtil.getNomeTabela(thisClass), getUpdateValores(camposValores), value.getId());
                 System.out.println(formatUpdate);
-                Statement stmt = conexao.createStatement();
+                Statement stmt = connection.createStatement();
                 stmt.executeUpdate(formatUpdate);
             } else {
-                Statement stmt = conexao.createStatement();
-                ResultSet resultSet = stmt.executeQuery(format);
+                Statement stmt = connection.createStatement();
+                stmt.executeUpdate(format);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            fecharConexao(conexao);
         }
 
     }
@@ -98,54 +80,80 @@ public class BaseService<T extends ModelBase> {
                     method.invoke(novaInstancia, string);
                 }
             } catch (Exception ex) {
-                System.out.println("Reflexão falhou");
+                ex.printStackTrace();
             }
         }
         return novaInstancia;
     }
 
     public T getUnico(Integer id) {
-        Connection conexao = abrirConexao();
-
-        if (conexao == null) {
-            return null;
-        }
-
         String comando = ComandosSqlUtil.SQL_SELECT_ID.getComando();
-        String format = String.format(comando, getNomeTabela(), id);
+        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass), id);
         System.out.println(format);
 
         try {
-            Statement createStatement = conexao.createStatement();
+            Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
             if (resultSet.next()) {
                 return montarUnico(resultSet);
             }
 
         } catch (SQLException ex) {
-            System.out.println("Erro ao realizar consulta");
-        } finally {
-            fecharConexao(conexao);
+            ex.printStackTrace();
         }
 
         return null;
     }
+    
+    public T getCustomUnico(String where) {
+        String comando = ComandosSqlUtil.SQL_SELECT.getComando();
+        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
+        format +=  " where " + where;
+        System.out.println(format);
+        
+        try {
+            Statement createStatement = connection.createStatement();
+            ResultSet resultSet = createStatement.executeQuery(format);
+            if(resultSet.next()){
+                return montarUnico(resultSet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    public List<T> getCustomListagem(String where) {
+        String comando = ComandosSqlUtil.SQL_SELECT.getComando();
+        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
+        format += " where " + where;
+        System.out.println(format);
+        
+        List<T> lista = new ArrayList<>();
+        
+        try {
+            Statement createStatement = connection.createStatement();
+            ResultSet resultSet = createStatement.executeQuery(format);
+            while(resultSet.next()){
+                lista.add(montarUnico(resultSet));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return lista;
+    }
 
     public List<T> getListagem() {
-        Connection conexao = abrirConexao();
-
-        if (conexao == null) {
-            return null;
-        }
-
         String comando = ComandosSqlUtil.SQL_SELECT.getComando();
-        String format = String.format(comando, getNomeTabela());
+        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
         System.out.println(format);
 
         List<T> lista = new ArrayList<>();
 
         try {
-            Statement createStatement = conexao.createStatement();
+            Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
             while (resultSet.next()) {
                 T montarUnico = montarUnico(resultSet);
@@ -153,89 +161,46 @@ public class BaseService<T extends ModelBase> {
             }
             return lista;
         } catch (SQLException ex) {
-            System.out.println("Erro ao realizar consulta");
-        } finally {
-            fecharConexao(conexao);
+            ex.printStackTrace();
         }
 
         return null;
     }
 
-    private String getNomeTabela() {
-        return ClassUtil.getNomeTabela(thisClass);
-    }
+    private String getUpdateValores(List<CampoValor> camposValores) {
+        String updateValores = "";
 
-    private String getNomesCampos(Field[] fields) {
-        if (fields.length != 0) {
-            String campos = "";
-            for (Field field : fields) {
-                campos += field.getName() + ",";
+        for (Iterator<CampoValor> it = camposValores.iterator(); it.hasNext();) {
+            CampoValor campoValor = it.next();
+            String set = campoValor.getCampo() + "=" + campoValor.getValorString();
+            updateValores += set;
+            if (it.hasNext()) {
+                updateValores += ", ";
             }
-            campos = campos.substring(0, campos.length() - 1);
-            return campos;
-        } else {
-            return null;
         }
+
+        return updateValores;
     }
 
-    private String getUpdateNomesCampos(List<Field> fields, T value) {
-        if (!fields.isEmpty()) {
-            String valores = "";
-            for (Field field : fields) {
-                String valor = getValor(field, value);
-                if (valor != null) {
-                    valores += field.getName() + "=" + valor + ",";
+    public static String[] getInsertValores(Object value) {
+        List<CampoValor> camposValores = getCamposValores(value);
+
+        String campos = "";
+        String valores = "";
+
+        for (Iterator<CampoValor> it = camposValores.iterator(); it.hasNext();) {
+            CampoValor campoValor = it.next();
+
+            if (!campoValor.isNull()) {
+                campos += campoValor.getCampo();
+                valores += campoValor.getValorString();
+                if (it.hasNext()) {
+                    campos += ", ";
+                    valores += ", ";
                 }
             }
-            valores = valores.substring(0, valores.length() - 1);
-            return valores;
-        } else {
-            return null;
         }
-    }
 
-    private String getNomesCampos(List<Field> fields) {
-        return getNomesCampos(fields.toArray(new Field[fields.size()]));
-    }
-
-    private String getValores(Field[] fields, T value) {
-        if (fields.length != 0) {
-            String valores = "";
-            for (Field field : fields) {
-                String valor = getValor(field, value);
-                if (valor != null) {
-                    valores += valor + ",";
-                }
-            }
-            valores = valores.substring(0, valores.length() - 1);
-            return valores;
-        } else {
-            return null;
-        }
-    }
-
-    private String getValores(List<Field> fields, T value) {
-        return getValores(fields.toArray(new Field[fields.size()]), value);
-    }
-
-    private String getValor(Field field, T value) {
-        String name = field.getName();
-        Class<?> type = field.getType();
-
-        Method method;
-
-        try {
-            method = thisClass.getMethod(ClassUtil.getMethodGet(name));
-
-            if (type.equals(Integer.class)) {
-                return method.invoke(value).toString();
-            } else if (type.equals(String.class)) {
-                return "'" + (String) method.invoke(value) + "'";
-            }
-        } catch (Exception ex) {
-            System.out.println("Reflexão falhou");
-            return null;
-        }
-        return null;
+        return new String[]{campos, valores};
     }
 }

@@ -2,27 +2,33 @@ package ftf.visualizacao;
 
 import ftf.modelo.Usuario;
 import ftf.persistencia.UsuarioService;
-import ftf.sessao.Sessao;
+import java.util.Arrays;
 import javax.swing.JOptionPane;
 
-public class IndexVisualizacao extends javax.swing.JFrame {
-    
+public class CadastrarVisualizacao extends javax.swing.JFrame {
+
     private final UsuarioService usuarioService = UsuarioService.getInstance();
-    
+
     public Usuario getUsuario() {
+
+        if(txtSenha.getPassword().length < 1 || txtUsuario.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Senha nao pode ser vazia, nem usuario.");
+        } else if (Arrays.equals(txtSenha.getPassword(), txtConfirmarSenha.getPassword())) {
+
+            Usuario usuario = new Usuario();
+
+            usuario.setNome(txtUsuario.getText());
+            usuario.setSenha(txtSenha.getText());
+
+            return usuario;
+        } else {
+            JOptionPane.showMessageDialog(this, "Senha diferente, por favor tente novamente!");
+        }
         
-        Usuario usuario = new Usuario();
-        
-        usuario.setNome(txtUsuario.getText());
-        usuario.setSenha(txtSenha.getText());
-        
-        return usuario;
+        return null;
     }
 
-    /**
-     * Creates new form IndexVisualizacao
-     */
-    public IndexVisualizacao() {
+    public CadastrarVisualizacao() {
         initComponents();
     }
 
@@ -35,49 +41,31 @@ public class IndexVisualizacao extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        txtUsuario = new javax.swing.JTextField();
-        txtSenha = new javax.swing.JPasswordField();
-        btnEntrar = new javax.swing.JButton();
-        btnCadastrar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        btnSair = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        txtUsuario = new javax.swing.JTextField();
+        txtSenha = new javax.swing.JPasswordField();
+        txtConfirmarSenha = new javax.swing.JPasswordField();
+        txtCadastrar = new javax.swing.JButton();
+        txtCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        txtUsuario.setName(""); // NOI18N
-        txtUsuario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtUsuarioActionPerformed(evt);
-            }
-        });
-
-        txtSenha.setName(""); // NOI18N
-
-        btnEntrar.setText("Entrar");
-        btnEntrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEntrarActionPerformed(evt);
-            }
-        });
-
-        btnCadastrar.setText("Cadastrar-se");
-        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCadastrarActionPerformed(evt);
-            }
-        });
 
         jLabel1.setText("Usuário");
 
         jLabel2.setText("Senha");
 
-        btnSair.setText("Sair");
-        btnSair.addActionListener(new java.awt.event.ActionListener() {
+        jLabel3.setText("Confirmar senha");
+
+        txtCadastrar.setText("Cadastrar");
+        txtCadastrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSairActionPerformed(evt);
+                txtCadastrarActionPerformed(evt);
             }
         });
+
+        txtCancelar.setText("Cancelar");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -88,14 +76,15 @@ public class IndexVisualizacao extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtUsuario)
                     .addComponent(txtSenha)
-                    .addComponent(btnEntrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnCadastrar, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
+                    .addComponent(txtConfirmarSenha)
+                    .addComponent(txtCadastrar, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel1))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel3))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(btnSair, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(txtCancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -110,49 +99,35 @@ public class IndexVisualizacao extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnEntrar)
+                .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCadastrar)
+                .addComponent(txtConfirmarSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnSair)
+                .addComponent(txtCadastrar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtCancelar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        Usuario validado = usuarioService.validarUsuario(getUsuario());
+    private void txtCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCadastrarActionPerformed
+        Usuario usuario = getUsuario();
         
-        if(validado != null) {
-            JOptionPane.showMessageDialog(this, "Parabens, acertou a senha.");
-            Sessao.usuario = validado;
-            
-            JogadoresVisualizacao jogadoresVisualizacao = new JogadoresVisualizacao();
-            jogadoresVisualizacao.setVisible(true);
-            
-            this.setVisible(false);
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuario ou senha errada. Tente novamente");
+        if(usuario == null) {
+            return;
         }
-    }//GEN-LAST:event_btnEntrarActionPerformed
-
-    private void txtUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtUsuarioActionPerformed
-
-    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        CadastrarVisualizacao cadastrarVisualizacao = new CadastrarVisualizacao();
-        cadastrarVisualizacao.setVisible(true);
-    }//GEN-LAST:event_btnCadastrarActionPerformed
-
-    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         
-    }//GEN-LAST:event_btnSairActionPerformed
+        if(usuarioService.usuarioExistente(usuario.getNome())){
+            JOptionPane.showMessageDialog(this, "Usuario ja existente");
+            return;
+        }
+        
+        usuario.salvar();
+        JOptionPane.showMessageDialog(this, "Usuario cadastrado");
+    }//GEN-LAST:event_txtCadastrarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -167,30 +142,31 @@ public class IndexVisualizacao extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(IndexVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastrarVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(IndexVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastrarVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(IndexVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastrarVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(IndexVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastrarVisualizacao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new IndexVisualizacao().setVisible(true);
+                new CadastrarVisualizacao().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCadastrar;
-    private javax.swing.JButton btnEntrar;
-    private javax.swing.JButton btnSair;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JButton txtCadastrar;
+    private javax.swing.JButton txtCancelar;
+    private javax.swing.JPasswordField txtConfirmarSenha;
     private javax.swing.JPasswordField txtSenha;
     private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables

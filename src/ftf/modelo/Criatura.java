@@ -44,6 +44,9 @@ public abstract class Criatura implements ModelBase {
         }
         return Objects.equals(this.getNome(), c.getNome());
     }
-    
-    
+
+    @Override
+    public void salvar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -12,4 +12,5 @@ import ftf.persistencia.annotation.Tabela;
 @Tabela(nome = "base")
 public interface ModelBase {
     Integer getId();
+    void salvar();
 }

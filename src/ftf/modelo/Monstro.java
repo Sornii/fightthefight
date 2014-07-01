@@ -6,10 +6,13 @@
 
 package ftf.modelo;
 
+import ftf.persistencia.MonstroService;
 import ftf.persistencia.annotation.Tabela;
 
 @Tabela(nome = "monstros")
 public class Monstro extends Criatura {
+    
+    private final MonstroService monstroService = MonstroService.getInstance();
     
     private Integer recompensa;
 
@@ -19,5 +22,10 @@ public class Monstro extends Criatura {
 
     public void setRecompensa(Integer recompensa) {
         this.recompensa = recompensa;
+    }
+
+    @Override
+    public void salvar() {
+        monstroService.salvar(this);
     }
 }

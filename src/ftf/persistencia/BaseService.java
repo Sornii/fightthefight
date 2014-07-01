@@ -1,6 +1,8 @@
 package ftf.persistencia;
 
 import ftf.modelo.ModelBase;
+import ftf.persistencia.annotation.NaoMapear;
+import ftf.persistencia.annotation.Tabela;
 import ftf.persistencia.util.CampoValor;
 import ftf.persistencia.util.ClassUtil;
 import static ftf.persistencia.util.ClassUtil.getCamposValores;
@@ -55,6 +57,13 @@ public class BaseService<T extends ModelBase> {
 
     }
 
+    private <E extends ModelBase> E montarUnico(ResultSet resultSet, Class<E> cls) throws InstantiationException, IllegalAccessException, SQLException{
+        String columnName = cls.getSimpleName() + "_id";
+        Integer id = resultSet.getInt(columnName);
+        BaseService<E> baseService = new BaseService<>(cls);
+        return baseService.getUnico(id);
+    }
+    
     private T montarUnico(ResultSet resultSet) throws SQLException {
         T novaInstancia = null;
 
@@ -66,18 +75,25 @@ public class BaseService<T extends ModelBase> {
 
         List<Field> fields = ClassUtil.getCampos(thisClass);
         for (Field field : fields) {
+            
+            if (field.getAnnotationsByType(NaoMapear.class).length > 0) {
+                continue;
+            }
+            
             String setMethod = ClassUtil.getMethodSet(field.getName());
-            Class<?> type = field.getType();
-
+            Class fieldClass = field.getClass();
+            
             try {
-                if (type == Integer.class) {
+                if (fieldClass == Integer.class) {
                     int aInt = resultSet.getInt(field.getName());
                     Method method = thisClass.getMethod(setMethod, Integer.class);
                     method.invoke(novaInstancia, aInt);
-                } else if (type == String.class) {
+                } else if (fieldClass == String.class) {
                     String string = resultSet.getString(field.getName());
                     Method method = thisClass.getMethod(setMethod, String.class);
                     method.invoke(novaInstancia, string);
+                } else if (fieldClass.getInterfaces()[0] == ModelBase.class){
+                    montarUnico(resultSet, fieldClass);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

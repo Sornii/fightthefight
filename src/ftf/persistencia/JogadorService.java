@@ -1,8 +1,6 @@
 package ftf.persistencia;
 
 import ftf.modelo.Jogador;
-import ftf.modelo.Usuario;
-
 
 public class JogadorService extends BaseService<Jogador> {
     
@@ -21,16 +19,6 @@ public class JogadorService extends BaseService<Jogador> {
     }
     
     public static void main(String[] args) {
-        Jogador jogador = new Jogador();
-        jogador.setNome("Sornii");
-        
-        Usuario usuario = new Usuario();
-        usuario.setNome("sornii");
-        usuario.setSenha("1234");
-        usuario.salvar();
-        
-        jogador.setUsuario(usuario);
-        
-        jogador.salvar();
+        jogadorService.toString();
     }
 }

@@ -7,11 +7,13 @@
 package ftf.modelo;
 
 import ftf.persistencia.MonstroService;
+import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
 
 @Tabela(nome = "monstros")
 public class Monstro extends Criatura {
     
+    @NaoMapear
     private final MonstroService monstroService = MonstroService.getInstance();
     
     private Integer recompensa;

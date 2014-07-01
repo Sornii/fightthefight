@@ -1,5 +1,6 @@
 package ftf.persistencia.util;
 
+import ftf.persistencia.annotation.Tabela;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,8 +10,9 @@ import java.util.List;
 
 public class ClassUtil {
     
-    public static String getNomeTabela(Class value){
-        return value.getSimpleName().toLowerCase();
+    public static <T> String getNomeTabela(Class<T> value){
+        Tabela[] tabelaAnnotations = value.getAnnotationsByType(Tabela.class);
+        return tabelaAnnotations[0].nome();
     }
     
     public static String getMethodGet(String fieldName) {

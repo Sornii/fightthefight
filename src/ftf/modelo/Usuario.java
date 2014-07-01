@@ -1,10 +1,14 @@
 package ftf.modelo;
 
 import ftf.persistencia.UsuarioService;
+import ftf.persistencia.annotation.NaoMapear;
+import ftf.persistencia.annotation.Tabela;
 import java.util.List;
 
+@Tabela(nome = "usuarios")
 public class Usuario implements ModelBase {
 
+    @NaoMapear
     private final UsuarioService usuarioService = UsuarioService.getInstance();
 
     private Integer id;

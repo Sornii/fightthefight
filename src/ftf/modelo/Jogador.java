@@ -1,11 +1,13 @@
 package ftf.modelo;
 
 import ftf.persistencia.JogadorService;
+import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
 
 @Tabela(nome = "jogadores")
 public class Jogador extends Criatura {
     
+    @NaoMapear
     private final JogadorService jogadorService = JogadorService.getInstance();
     
     private Usuario usuario;

@@ -6,8 +6,10 @@
 
 package ftf.modelo;
 
+import ftf.persistencia.annotation.Tabela;
 import java.util.Objects;
 
+@Tabela(nome = "criaturas")
 public abstract class Criatura implements ModelBase {
     
     private Integer id;

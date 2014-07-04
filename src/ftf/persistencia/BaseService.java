@@ -203,9 +203,7 @@ public class BaseService<T extends Model> {
         String campos = "";
         String valores = "";
 
-        for (Iterator<CampoValor> it = campoValors.iterator(); it.hasNext();) {
-            CampoValor campoValor = it.next();
-
+        for (CampoValor campoValor : campoValors) {
             if (!campoValor.isNull()) {
                 campos += campoValor.getCampo() + ", ";
                 valores += campoValor.getValorString() + ", ";

@@ -6,19 +6,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexaoDatabase implements MediaDisposer.Disposable {
+
     private static Connection connection;
-    
+
     private ConexaoDatabase() {
-        
+
     }
-    
-    public static Connection getConnection(){
-        if(connection == null) {
+
+    public static Connection getConnection() {
+        if (connection == null) {
             conectar();
         }
         return connection;
     }
-    
+
     public static void conectar() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -27,7 +28,7 @@ public class ConexaoDatabase implements MediaDisposer.Disposable {
             System.out.println("Erro ao abrir conexão");
         }
     }
-    
+
     public static void desconectar() {
         try {
             connection.close();

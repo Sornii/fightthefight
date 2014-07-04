@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ftf.visualizacao;
 
 import ftf.modelo.Jogador;
@@ -16,7 +15,7 @@ import javax.swing.DefaultListModel;
  * @author Igor
  */
 public class JogadoresVisualizacao extends javax.swing.JFrame {
-    
+
     List<Jogador> jogadores = Sessao.usuario.getJogadores();
 
     /**
@@ -24,10 +23,12 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
      */
     public JogadoresVisualizacao() {
         initComponents();
+        atualizarLista();
+    }
+    
+    private void atualizarLista(){ 
         DefaultListModel<Jogador> listModel = new DefaultListModel<>();
-        for(Jogador jogador : jogadores) {
-            listModel.addElement(jogador);
-        }
+        jogadores.forEach((jogador)-> listModel.addElement(jogador));
         listJogadores.setModel(listModel);
     }
 
@@ -45,6 +46,7 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
         btnSair = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         listJogadores = new javax.swing.JList();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -76,6 +78,13 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(listJogadores);
 
+        jButton1.setText("Atualizar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -85,19 +94,24 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCarregar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnCarregar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton1))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCarregar)
@@ -116,12 +130,16 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
 
     private void btnCarregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCarregarActionPerformed
         Sessao.jogador = (Jogador) listJogadores.getSelectedValue();
-        this.setVisible(false);
+        dispose();
     }//GEN-LAST:event_btnCarregarActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        this.setVisible(false);
+        dispose();
     }//GEN-LAST:event_btnSairActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        atualizarLista();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -162,6 +180,7 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
     private javax.swing.JButton btnCarregar;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnSair;
+    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList listJogadores;
     // End of variables declaration//GEN-END:variables

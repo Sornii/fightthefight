@@ -1,7 +1,6 @@
 package ftf.persistencia;
 
-import ftf.modelo.ModelBase;
-import ftf.persistencia.annotation.NaoMapear;
+import ftf.modelo.Model;
 import ftf.persistencia.util.CampoValor;
 import ftf.persistencia.util.ClassUtil;
 import static ftf.persistencia.util.ClassUtil.getCamposValores;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BaseService<T extends ModelBase> {
+public class BaseService<T extends Model> {
 
     private final Connection connection = ConexaoDatabase.getConnection();
     private final Class<T> thisClass;
@@ -27,9 +26,9 @@ public class BaseService<T extends ModelBase> {
 
     public void salvar(T value) {
 
-        List<CampoValor> camposValores = ClassUtil.getCamposValores(value);
+        List<CampoValor> camposValores = getCamposValores(value);
 
-        String[] campoValor = getInsertValores(value);
+        String[] campoValor = getInsertValores(camposValores);
         String campo = campoValor[0];
         String valor = campoValor[1];
 
@@ -75,10 +74,6 @@ public class BaseService<T extends ModelBase> {
         List<Field> fields = ClassUtil.getCampos(cls);
         for (Field field : fields) {
 
-            if (field.getAnnotationsByType(NaoMapear.class).length > 0) {
-                continue;
-            }
-
             String setMethod = ClassUtil.getMethodSet(field.getName());
             Class<?> fieldClass = field.getType();
 
@@ -91,7 +86,7 @@ public class BaseService<T extends ModelBase> {
                     String string = resultSet.getString(field.getName());
                     Method method = cls.getMethod(setMethod, String.class);
                     method.invoke(novaInstancia, string);
-                } else if (fieldClass.getInterfaces()[0] == ModelBase.class) {
+                } else if (fieldClass.getSuperclass().equals(Model.class)) {
                     T unicoGot = montarUnicoChild(resultSet, (Class<T>) fieldClass);
                     Method method = cls.getMethod(setMethod, fieldClass);
                     method.invoke(novaInstancia, unicoGot);
@@ -203,23 +198,28 @@ public class BaseService<T extends ModelBase> {
         return updateValores;
     }
 
-    public static String[] getInsertValores(Object value) {
-        List<CampoValor> camposValores = getCamposValores(value);
+    public static String[] getInsertValores(List<CampoValor> campoValors) {
 
         String campos = "";
         String valores = "";
 
-        for (Iterator<CampoValor> it = camposValores.iterator(); it.hasNext();) {
+        for (Iterator<CampoValor> it = campoValors.iterator(); it.hasNext();) {
             CampoValor campoValor = it.next();
 
             if (!campoValor.isNull()) {
-                campos += campoValor.getCampo();
-                valores += campoValor.getValorString();
-                if (it.hasNext()) {
-                    campos += ", ";
-                    valores += ", ";
-                }
+                campos += campoValor.getCampo() + ", ";
+                valores += campoValor.getValorString() + ", ";
             }
+        }
+        
+        if (campos.length() > 0) {
+            int tamanho = campos.length();
+            campos = campos.substring(0, tamanho - 2);
+        }
+        
+        if(valores.length() > 0) {
+            int tamanho = valores.length();
+            valores = valores.substring(0, tamanho - 2);
         }
 
         return new String[]{campos, valores};

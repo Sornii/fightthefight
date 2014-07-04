@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ftf.persistencia.util;
 
 /**
@@ -11,6 +10,7 @@ package ftf.persistencia.util;
  * @author Igor
  */
 public class StringUtil {
+
     public static String capitalize(String value) {
         String rt = "";
         if (value.length() > 0) {

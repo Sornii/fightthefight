@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ftf.modelo;
 
 import ftf.persistencia.ArmaService;
@@ -12,12 +11,12 @@ import ftf.persistencia.annotation.Tabela;
 
 @Tabela(nome = "armas")
 public class Arma extends Item {
-    
+
     @NaoMapear
     private final ArmaService armaService = ArmaService.getInstance();
-    
+
     private Integer ataque;
-    
+
     {
         ataque = 0;
     }

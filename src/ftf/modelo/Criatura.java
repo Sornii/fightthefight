@@ -3,26 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ftf.modelo;
 
 import ftf.persistencia.annotation.Tabela;
-import java.util.Objects;
 
 @Tabela(nome = "criaturas")
-public abstract class Criatura implements ModelBase {
-    
-    private Integer id;
+public abstract class Criatura extends Model {
+
     private String nome;
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private Integer vidaAtual;
+    private Integer vidaTotal;
 
     public String getNome() {
         return nome;
@@ -31,30 +21,27 @@ public abstract class Criatura implements ModelBase {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 83 * hash + Objects.hashCode(this.id);
-        hash = 83 * hash + Objects.hashCode(this.nome);
-        return hash;
+
+    public Integer getVidaAtual() {
+        return vidaAtual;
+    }
+
+    public void setVidaAtual(Integer vidaAtual) {
+        this.vidaAtual = vidaAtual;
+    }
+
+    public Integer getVidaTotal() {
+        return vidaTotal;
+    }
+
+    public void setVidaTotal(Integer vidaTotal) {
+        this.vidaTotal = vidaTotal;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Criatura other = (Criatura) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.nome, other.nome)) {
-            return false;
-        }
-        return true;
+    public String toString() {
+        return getNome();
     }
+    
+    
 }

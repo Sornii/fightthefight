@@ -1,22 +1,14 @@
 package ftf.modelo;
 
-public abstract class Item implements ModelBase {
+import java.util.Objects;
 
-    private Integer id;
+public abstract class Item extends Model {
+
     private String nome;
     private Integer preco;
-    
+
     {
         preco = 0;
-    }
-    
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getNome() {
@@ -33,5 +25,29 @@ public abstract class Item implements ModelBase {
 
     public void setPreco(Integer preco) {
         this.preco = preco;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + Objects.hashCode(this.nome);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Item other = (Item) obj;
+        return Objects.equals(this.nome, other.nome);
+    }
+
+    @Override
+    public String toString() {
+        return getNome();
     }
 }

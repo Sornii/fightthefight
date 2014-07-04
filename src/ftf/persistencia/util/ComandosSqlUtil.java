@@ -1,6 +1,7 @@
 package ftf.persistencia.util;
 
 public enum ComandosSqlUtil {
+
     SQL_INSERT("INSERT INTO %s "
             + "(%s) "
             + "VALUES (%s)"),
@@ -14,14 +15,14 @@ public enum ComandosSqlUtil {
     SQL_UPDATE("UPDATE %s "
             + "SET %s "
             + "WHERE id = %s");
-    
+
     private final String comandoSql;
-    
-    private ComandosSqlUtil(String comandoSql){
+
+    private ComandosSqlUtil(String comandoSql) {
         this.comandoSql = comandoSql;
     }
-    
-    public String getComando(){
+
+    public String getComando() {
         return comandoSql;
     }
 }

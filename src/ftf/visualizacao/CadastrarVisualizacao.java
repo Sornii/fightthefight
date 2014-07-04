@@ -2,6 +2,7 @@ package ftf.visualizacao;
 
 import ftf.modelo.Usuario;
 import ftf.persistencia.UsuarioService;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JOptionPane;
 
@@ -11,7 +12,7 @@ public class CadastrarVisualizacao extends javax.swing.JFrame {
 
     public Usuario getUsuario() {
 
-        if(txtSenha.getPassword().length < 1 || txtUsuario.getText().isEmpty()) {
+        if (txtSenha.getPassword().length < 1 || txtUsuario.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Senha nao pode ser vazia, nem usuario.");
         } else if (Arrays.equals(txtSenha.getPassword(), txtConfirmarSenha.getPassword())) {
 
@@ -24,12 +25,14 @@ public class CadastrarVisualizacao extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Senha diferente, por favor tente novamente!");
         }
-        
+
         return null;
     }
 
     public CadastrarVisualizacao() {
         initComponents();
+        new ArrayList();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -66,6 +69,11 @@ public class CadastrarVisualizacao extends javax.swing.JFrame {
         });
 
         txtCancelar.setText("Cancelar");
+        txtCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -114,19 +122,23 @@ public class CadastrarVisualizacao extends javax.swing.JFrame {
 
     private void txtCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCadastrarActionPerformed
         Usuario usuario = getUsuario();
-        
-        if(usuario == null) {
+
+        if (usuario == null) {
             return;
         }
-        
-        if(usuarioService.usuarioExistente(usuario.getNome())){
+
+        if (usuarioService.usuarioExistente(usuario.getNome())) {
             JOptionPane.showMessageDialog(this, "Usuario ja existente");
             return;
         }
-        
+
         usuario.salvar();
         JOptionPane.showMessageDialog(this, "Usuario cadastrado");
     }//GEN-LAST:event_txtCadastrarActionPerformed
+
+    private void txtCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCancelarActionPerformed
+        dispose();
+    }//GEN-LAST:event_txtCancelarActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -153,10 +165,8 @@ public class CadastrarVisualizacao extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new CadastrarVisualizacao().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new CadastrarVisualizacao().setVisible(true);
         });
     }
 

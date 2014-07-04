@@ -7,26 +7,19 @@ import ftf.persistencia.annotation.Tabela;
 import java.util.List;
 
 @Tabela(nome = "usuarios")
-public class Usuario implements ModelBase {
+public class Usuario extends Model {
 
     @NaoMapear
     private final UsuarioService usuarioService = UsuarioService.getInstance();
-    
+
     @NaoMapear
     private final JogadorService jogadorService = JogadorService.getInstance();
-    
-    private Integer id;
+
     private String nome;
     private String senha;
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
+    
+    @NaoMapear
+    private List<Jogador> jogadores;
 
     public String getNome() {
         return nome;
@@ -55,6 +48,9 @@ public class Usuario implements ModelBase {
     }
 
     public List<Jogador> getJogadores() {
-        return jogadorService.getJogadores(this);
+        if (jogadores == null) {
+            return jogadorService.getJogadores(this);
+        }
+        return jogadores;
     }
 }

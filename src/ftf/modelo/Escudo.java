@@ -14,9 +14,9 @@ public class Escudo extends Item {
 
     @NaoMapear
     private final EscudoService escudoService = EscudoService.getInstance();
-    
+
     private Integer defesa;
-    
+
     {
         defesa = 0;
     }

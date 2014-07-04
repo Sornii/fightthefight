@@ -6,16 +6,16 @@ import ftf.sessao.Sessao;
 import javax.swing.JOptionPane;
 
 public class IndexVisualizacao extends javax.swing.JFrame {
-    
+
     private final UsuarioService usuarioService = UsuarioService.getInstance();
-    
+
     public Usuario getUsuario() {
-        
+
         Usuario usuario = new Usuario();
-        
+
         usuario.setNome(txtUsuario.getText());
         usuario.setSenha(txtSenha.getText());
-        
+
         return usuario;
     }
 
@@ -123,14 +123,14 @@ public class IndexVisualizacao extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         Usuario validado = usuarioService.validarUsuario(getUsuario());
-        
-        if(validado != null) {
+
+        if (validado != null) {
             JOptionPane.showMessageDialog(this, "Parabens, acertou a senha.");
             Sessao.usuario = validado;
-            
+
             JogadoresVisualizacao jogadoresVisualizacao = new JogadoresVisualizacao();
             jogadoresVisualizacao.setVisible(true);
-            
+
             this.setVisible(false);
         } else {
             JOptionPane.showMessageDialog(this, "Usuario ou senha errada. Tente novamente");
@@ -147,7 +147,7 @@ public class IndexVisualizacao extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        
+        System.exit(0);
     }//GEN-LAST:event_btnSairActionPerformed
 
     /**

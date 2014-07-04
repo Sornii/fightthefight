@@ -10,12 +10,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ClassUtil {
-    
-    public static <T> String getNomeTabela(Class<T> value){
+
+    public static <T> String getNomeTabela(Class<T> value) {
         Tabela[] tabelaAnnotations = value.getAnnotationsByType(Tabela.class);
         return tabelaAnnotations[0].nome();
     }
-    
+
     public static String getMethodGet(String fieldName) {
         return "get" + StringUtil.capitalize(fieldName);
     }
@@ -23,13 +23,15 @@ public class ClassUtil {
     public static String getMethodSet(String fieldName) {
         return "set" + StringUtil.capitalize(fieldName);
     }
-    
+
     public static List<Field> getCampos(Class value) {
         List<Field> fields = new ArrayList<>();
-        
         adicionarCampos(Arrays.asList(value.getDeclaredFields()), fields);
-        adicionarCampos(Arrays.asList(value.getSuperclass().getDeclaredFields()), fields);
-        
+
+        while ((value = value.getSuperclass()) != Object.class) {
+            adicionarCampos(Arrays.asList(value.getDeclaredFields()), fields);
+        }
+
         return fields;
     }
 
@@ -40,7 +42,7 @@ public class ClassUtil {
             }
         });
     }
-    
+
     public static List<CampoValor> getCamposValores(Object value) {
         Class valueClass = value.getClass();
         List<Field> campos = getCampos(valueClass);
@@ -51,8 +53,7 @@ public class ClassUtil {
                 Method getMethod = valueClass.getMethod(getMethodName);
                 Object returnValue = getMethod.invoke(value);
                 camposValores.add(new CampoValor(campo.getName(), returnValue));
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException 
-                    | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 System.out.println("Reflexão falhou");
             }
         });

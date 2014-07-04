@@ -1,6 +1,6 @@
 package ftf.persistencia.util;
 
-import ftf.modelo.ModelBase;
+import ftf.modelo.Model;
 
 public class CampoValor {
 
@@ -40,7 +40,7 @@ public class CampoValor {
         } else if (valor instanceof Integer) {
             return valor.toString();
         } else {
-            ModelBase base = (ModelBase) valor;
+            Model base = (Model) valor;
             return base.getId().toString();
         }
     }

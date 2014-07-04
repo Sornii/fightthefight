@@ -8,8 +8,15 @@ package ftf.modelo;
 
 import ftf.persistencia.annotation.Tabela;
 
+@Tabela(nome = "armas")
+public class Arma extends Item {
+    private Integer ataque;
 
-@Tabela(nome = "base")
-public interface ModelBase {
-    Integer getId();
+    public Integer getAtaque() {
+        return ataque;
+    }
+
+    public void setAtaque(Integer ataque) {
+        this.ataque = ataque;
+    }
 }

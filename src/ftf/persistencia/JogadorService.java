@@ -1,6 +1,8 @@
 package ftf.persistencia;
 
 import ftf.modelo.Jogador;
+import ftf.modelo.Usuario;
+import java.util.List;
 
 public class JogadorService extends BaseService<Jogador> {
     
@@ -18,7 +20,7 @@ public class JogadorService extends BaseService<Jogador> {
         return getCustomUnico("nome = '"+ nome +"'");
     }
     
-    public static void main(String[] args) {
-        jogadorService.toString();
+    public List<Jogador> getJogadores(Usuario usuario) {
+        return jogadorService.getCustomListagem("usuario_id = " + usuario.getId());
     }
 }

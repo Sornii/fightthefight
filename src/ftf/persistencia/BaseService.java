@@ -7,6 +7,7 @@ import ftf.persistencia.util.CampoValor;
 import ftf.persistencia.util.ClassUtil;
 import static ftf.persistencia.util.ClassUtil.getCamposValores;
 import ftf.persistencia.util.ComandosSqlUtil;
+import ftf.persistencia.util.StringUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -20,7 +21,7 @@ import java.util.List;
 public class BaseService<T extends ModelBase> {
 
     private final Connection connection = ConexaoDatabase.getConnection();
-    private final Class<T> thisClass;
+    private Class<T> thisClass;
 
     protected BaseService(Class<T> thisClass) {
         this.thisClass = thisClass;
@@ -56,24 +57,24 @@ public class BaseService<T extends ModelBase> {
         }
 
     }
-
-    private <E extends ModelBase> E montarUnico(ResultSet resultSet, Class<E> cls) throws InstantiationException, IllegalAccessException, SQLException{
-        String columnName = cls.getSimpleName() + "_id";
-        Integer id = resultSet.getInt(columnName);
-        BaseService<E> baseService = new BaseService<>(cls);
-        return baseService.getUnico(id);
-    }
     
-    private T montarUnico(ResultSet resultSet) throws SQLException {
+    private T montarUnicoChild(ResultSet resultSet, Class<T> cls) throws SQLException {
+        String columnName = cls.getSimpleName().toLowerCase() + "_id";
+        Integer id = resultSet.getInt(columnName);
+        
+        return getUnico(id, cls);
+    }
+
+    private T montarUnico(ResultSet resultSet, Class<T> cls) throws SQLException {
         T novaInstancia = null;
 
         try {
-            novaInstancia = thisClass.newInstance();
+            novaInstancia = cls.newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {
             System.out.println("Não foi possível construir uma instância");
         }
 
-        List<Field> fields = ClassUtil.getCampos(thisClass);
+        List<Field> fields = ClassUtil.getCampos(cls);
         for (Field field : fields) {
             
             if (field.getAnnotationsByType(NaoMapear.class).length > 0) {
@@ -81,19 +82,21 @@ public class BaseService<T extends ModelBase> {
             }
             
             String setMethod = ClassUtil.getMethodSet(field.getName());
-            Class fieldClass = field.getClass();
+            Class<?> fieldClass = field.getType();
             
             try {
                 if (fieldClass == Integer.class) {
                     int aInt = resultSet.getInt(field.getName());
-                    Method method = thisClass.getMethod(setMethod, Integer.class);
+                    Method method = cls.getMethod(setMethod, Integer.class);
                     method.invoke(novaInstancia, aInt);
                 } else if (fieldClass == String.class) {
                     String string = resultSet.getString(field.getName());
-                    Method method = thisClass.getMethod(setMethod, String.class);
+                    Method method = cls.getMethod(setMethod, String.class);
                     method.invoke(novaInstancia, string);
                 } else if (fieldClass.getInterfaces()[0] == ModelBase.class){
-                    montarUnico(resultSet, fieldClass);
+                    T unicoGot = montarUnicoChild(resultSet, (Class<T>) fieldClass);
+                    Method method = cls.getMethod(setMethod, fieldClass);
+                    method.invoke(novaInstancia, unicoGot);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -102,16 +105,20 @@ public class BaseService<T extends ModelBase> {
         return novaInstancia;
     }
 
-    public T getUnico(Integer id) {
+    public T getUnico(Integer id){
+        return getUnico(id, thisClass);
+    }
+    
+    public T getUnico(Integer id, Class<T> cls) {
         String comando = ComandosSqlUtil.SQL_SELECT_ID.getComando();
-        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass), id);
+        String format = String.format(comando, ClassUtil.getNomeTabela(cls), id);
         System.out.println(format);
 
         try {
             Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
             if (resultSet.next()) {
-                return montarUnico(resultSet);
+                return montarUnico(resultSet, cls);
             }
 
         } catch (SQLException ex) {
@@ -124,14 +131,14 @@ public class BaseService<T extends ModelBase> {
     public T getCustomUnico(String where) {
         String comando = ComandosSqlUtil.SQL_SELECT.getComando();
         String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
-        format +=  " where " + where;
+        format +=  " WHERE " + where;
         System.out.println(format);
         
         try {
             Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
             if(resultSet.next()){
-                return montarUnico(resultSet);
+                return montarUnico(resultSet, thisClass);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,7 +150,7 @@ public class BaseService<T extends ModelBase> {
     public List<T> getCustomListagem(String where) {
         String comando = ComandosSqlUtil.SQL_SELECT.getComando();
         String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
-        format += " where " + where;
+        format += " WHERE " + where;
         System.out.println(format);
         
         List<T> lista = new ArrayList<>();
@@ -152,7 +159,7 @@ public class BaseService<T extends ModelBase> {
             Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
             while(resultSet.next()){
-                lista.add(montarUnico(resultSet));
+                lista.add(montarUnico(resultSet, thisClass));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,7 +179,7 @@ public class BaseService<T extends ModelBase> {
             Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
             while (resultSet.next()) {
-                T montarUnico = montarUnico(resultSet);
+                T montarUnico = montarUnico(resultSet, thisClass);
                 lista.add(montarUnico);
             }
             return lista;

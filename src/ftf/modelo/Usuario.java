@@ -1,5 +1,6 @@
 package ftf.modelo;
 
+import ftf.persistencia.JogadorService;
 import ftf.persistencia.UsuarioService;
 import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
@@ -10,7 +11,10 @@ public class Usuario implements ModelBase {
 
     @NaoMapear
     private final UsuarioService usuarioService = UsuarioService.getInstance();
-
+    
+    @NaoMapear
+    private final JogadorService jogadorService = JogadorService.getInstance();
+    
     private Integer id;
     private String nome;
     private String senha;
@@ -40,7 +44,6 @@ public class Usuario implements ModelBase {
         this.senha = senha;
     }
 
-    @Override
     public void salvar() {
         usuarioService.salvar(this);
 
@@ -51,6 +54,6 @@ public class Usuario implements ModelBase {
     }
 
     public List<Jogador> getJogadores() {
-        return usuarioService.getJogadores(this);
+        return jogadorService.getJogadores(this);
     }
 }

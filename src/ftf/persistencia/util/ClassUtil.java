@@ -1,5 +1,6 @@
 package ftf.persistencia.util;
 
+import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,9 +26,19 @@ public class ClassUtil {
     
     public static List<Field> getCampos(Class value) {
         List<Field> fields = new ArrayList<>();
-        fields.addAll(Arrays.asList(value.getDeclaredFields()));
-        fields.addAll(Arrays.asList(value.getSuperclass().getDeclaredFields()));
+        
+        adicionarCampos(Arrays.asList(value.getDeclaredFields()), fields);
+        adicionarCampos(Arrays.asList(value.getSuperclass().getDeclaredFields()), fields);
+        
         return fields;
+    }
+
+    private static void adicionarCampos(List<Field> superClassFields, List<Field> fields) {
+        superClassFields.forEach((field) -> {
+            if (field.getAnnotation(NaoMapear.class) == null) {
+                fields.add(field);
+            }
+        });
     }
     
     public static List<CampoValor> getCamposValores(Object value) {

@@ -12,6 +12,14 @@ public class Jogador extends Criatura {
     
     private Usuario usuario;
     private Integer dinheiro;
+    private Integer nivel;
+    private Integer experiencia;
+
+    public Jogador() {
+        dinheiro =
+        experiencia = 0;
+        nivel = 1;
+    }
 
     public Usuario getUsuario() {
         return usuario;
@@ -29,8 +37,31 @@ public class Jogador extends Criatura {
         this.dinheiro = dinheiro;
     }
 
+    public Integer getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(Integer nivel) {
+        this.nivel = nivel;
+    }
+
+    public Integer getExperiencia() {
+        return experiencia;
+    }
+
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
+    }
+
     @Override
     public void salvar() {
         jogadorService.salvar(this);
     }
+
+    @Override
+    public String toString() {
+        return this.getNome();
+    }
+    
+    
 }

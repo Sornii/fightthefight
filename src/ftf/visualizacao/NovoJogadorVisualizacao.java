@@ -6,6 +6,7 @@
 
 package ftf.visualizacao;
 
+import ftf.modelo.Jogador;
 import ftf.modelo.Usuario;
 import ftf.sessao.Sessao;
 
@@ -93,8 +94,9 @@ public class NovoJogadorVisualizacao extends javax.swing.JFrame {
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
         Usuario usuario = Sessao.usuario;
         
-        
-        
+        Jogador jogador = new Jogador();
+        jogador.setNome(txtNome.getText());
+        jogador.salvar();
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     /**

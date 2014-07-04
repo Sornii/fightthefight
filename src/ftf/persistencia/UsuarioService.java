@@ -32,8 +32,4 @@ public class UsuarioService extends BaseService<Usuario> {
         Usuario usuarioExistente = getCustomUnico("nome = '" + usuario + "'");
         return usuarioExistente != null;
     }
-    
-    public List<Jogador> getJogadores(Usuario usuario) {
-        return jogadorService.getCustomListagem("usuario_id = " + usuario.getId());
-    }
 }

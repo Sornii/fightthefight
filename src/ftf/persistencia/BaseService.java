@@ -2,12 +2,10 @@ package ftf.persistencia;
 
 import ftf.modelo.ModelBase;
 import ftf.persistencia.annotation.NaoMapear;
-import ftf.persistencia.annotation.Tabela;
 import ftf.persistencia.util.CampoValor;
 import ftf.persistencia.util.ClassUtil;
 import static ftf.persistencia.util.ClassUtil.getCamposValores;
 import ftf.persistencia.util.ComandosSqlUtil;
-import ftf.persistencia.util.StringUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -21,7 +19,7 @@ import java.util.List;
 public class BaseService<T extends ModelBase> {
 
     private final Connection connection = ConexaoDatabase.getConnection();
-    private Class<T> thisClass;
+    private final Class<T> thisClass;
 
     protected BaseService(Class<T> thisClass) {
         this.thisClass = thisClass;
@@ -40,7 +38,7 @@ public class BaseService<T extends ModelBase> {
         System.out.println(format);
 
         T auxValue = getUnico(value.getId());
-        
+
         try {
             if (auxValue != null) {
                 String comandoUpdate = ComandosSqlUtil.SQL_UPDATE.getComando();
@@ -57,11 +55,11 @@ public class BaseService<T extends ModelBase> {
         }
 
     }
-    
+
     private T montarUnicoChild(ResultSet resultSet, Class<T> cls) throws SQLException {
         String columnName = cls.getSimpleName().toLowerCase() + "_id";
         Integer id = resultSet.getInt(columnName);
-        
+
         return getUnico(id, cls);
     }
 
@@ -76,14 +74,14 @@ public class BaseService<T extends ModelBase> {
 
         List<Field> fields = ClassUtil.getCampos(cls);
         for (Field field : fields) {
-            
+
             if (field.getAnnotationsByType(NaoMapear.class).length > 0) {
                 continue;
             }
-            
+
             String setMethod = ClassUtil.getMethodSet(field.getName());
             Class<?> fieldClass = field.getType();
-            
+
             try {
                 if (fieldClass == Integer.class) {
                     int aInt = resultSet.getInt(field.getName());
@@ -93,7 +91,7 @@ public class BaseService<T extends ModelBase> {
                     String string = resultSet.getString(field.getName());
                     Method method = cls.getMethod(setMethod, String.class);
                     method.invoke(novaInstancia, string);
-                } else if (fieldClass.getInterfaces()[0] == ModelBase.class){
+                } else if (fieldClass.getInterfaces()[0] == ModelBase.class) {
                     T unicoGot = montarUnicoChild(resultSet, (Class<T>) fieldClass);
                     Method method = cls.getMethod(setMethod, fieldClass);
                     method.invoke(novaInstancia, unicoGot);
@@ -105,11 +103,11 @@ public class BaseService<T extends ModelBase> {
         return novaInstancia;
     }
 
-    public T getUnico(Integer id){
+    public T getUnico(Integer id) {
         return getUnico(id, thisClass);
     }
-    
-    public T getUnico(Integer id, Class<T> cls) {
+
+    private T getUnico(Integer id, Class<T> cls) {
         String comando = ComandosSqlUtil.SQL_SELECT_ID.getComando();
         String format = String.format(comando, ClassUtil.getNomeTabela(cls), id);
         System.out.println(format);
@@ -127,44 +125,44 @@ public class BaseService<T extends ModelBase> {
 
         return null;
     }
-    
+
     public T getCustomUnico(String where) {
         String comando = ComandosSqlUtil.SQL_SELECT.getComando();
         String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
-        format +=  " WHERE " + where;
+        format += " WHERE " + where;
         System.out.println(format);
-        
+
         try {
             Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return montarUnico(resultSet, thisClass);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return null;
     }
-    
+
     public List<T> getCustomListagem(String where) {
         String comando = ComandosSqlUtil.SQL_SELECT.getComando();
         String format = String.format(comando, ClassUtil.getNomeTabela(thisClass));
         format += " WHERE " + where;
         System.out.println(format);
-        
+
         List<T> lista = new ArrayList<>();
-        
+
         try {
             Statement createStatement = connection.createStatement();
             ResultSet resultSet = createStatement.executeQuery(format);
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 lista.add(montarUnico(resultSet, thisClass));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return lista;
     }
 

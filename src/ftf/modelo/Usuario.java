@@ -44,6 +44,7 @@ public class Usuario implements ModelBase {
         this.senha = senha;
     }
 
+    @Override
     public void salvar() {
         usuarioService.salvar(this);
 

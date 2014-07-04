@@ -6,11 +6,21 @@
 
 package ftf.modelo;
 
+import ftf.persistencia.ArmaService;
+import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
 
 @Tabela(nome = "armas")
 public class Arma extends Item {
+    
+    @NaoMapear
+    private final ArmaService armaService = ArmaService.getInstance();
+    
     private Integer ataque;
+    
+    {
+        ataque = 0;
+    }
 
     public Integer getAtaque() {
         return ataque;
@@ -18,5 +28,10 @@ public class Arma extends Item {
 
     public void setAtaque(Integer ataque) {
         this.ataque = ataque;
+    }
+
+    @Override
+    public void salvar() {
+        armaService.salvar(this);
     }
 }

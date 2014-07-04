@@ -31,23 +31,30 @@ public abstract class Criatura implements ModelBase {
     public void setNome(String nome) {
         this.nome = nome;
     }
+    
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 83 * hash + Objects.hashCode(this.id);
+        hash = 83 * hash + Objects.hashCode(this.nome);
+        return hash;
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        if (obj.getClass() != this.getClass()) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        Criatura c = (Criatura) obj;
-        if (!Objects.equals(this.getId(), c.getId())) {
+        final Criatura other = (Criatura) obj;
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        return Objects.equals(this.getNome(), c.getNome());
-    }
-
-    public void salvar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!Objects.equals(this.nome, other.nome)) {
+            return false;
+        }
+        return true;
     }
 }

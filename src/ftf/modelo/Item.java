@@ -1,10 +1,14 @@
 package ftf.modelo;
 
-public class Item implements ModelBase {
+public abstract class Item implements ModelBase {
 
     private Integer id;
     private String nome;
-    private Double preco;
+    private Integer preco;
+    
+    {
+        preco = 0;
+    }
     
     @Override
     public Integer getId() {
@@ -23,11 +27,11 @@ public class Item implements ModelBase {
         this.nome = nome;
     }
 
-    public Double getPreco() {
+    public Integer getPreco() {
         return preco;
     }
 
-    public void setPreco(Double preco) {
+    public void setPreco(Integer preco) {
         this.preco = preco;
     }
 }

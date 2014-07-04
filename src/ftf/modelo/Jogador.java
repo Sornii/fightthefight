@@ -14,11 +14,14 @@ public class Jogador extends Criatura {
     private Integer dinheiro;
     private Integer nivel;
     private Integer experiencia;
-
-    public Jogador() {
+    
+    {
         dinheiro =
         experiencia = 0;
         nivel = 1;
+    }
+    
+    public Jogador() {
     }
 
     public Usuario getUsuario() {
@@ -62,6 +65,4 @@ public class Jogador extends Criatura {
     public String toString() {
         return this.getNome();
     }
-    
-    
 }

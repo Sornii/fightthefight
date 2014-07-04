@@ -1,8 +1,6 @@
 package ftf.persistencia;
 
-import ftf.modelo.Jogador;
 import ftf.modelo.Usuario;
-import java.util.List;
 
 public class UsuarioService extends BaseService<Usuario> {
     private static final UsuarioService usuarioService = new UsuarioService(Usuario.class);

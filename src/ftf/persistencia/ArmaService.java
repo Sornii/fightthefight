@@ -12,4 +12,10 @@ public class ArmaService extends BaseService<Arma> {
     public static ArmaService getInstance(){
         return instance;
     }
+    
+    public static void main(String[] args) {
+        
+        
+        
+    }
 }

@@ -23,4 +23,8 @@ public class JogadorService extends BaseService<Jogador> {
     public List<Jogador> getJogadores(Usuario usuario) {
         return jogadorService.getCustomListagem("usuario_id = " + usuario.getId());
     }
+    
+    public static void main(String[] args) {
+        
+    }
 }

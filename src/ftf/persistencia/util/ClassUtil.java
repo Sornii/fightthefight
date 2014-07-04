@@ -44,7 +44,7 @@ public class ClassUtil {
     }
 
     public static List<CampoValor> getCamposValores(Object value) {
-        Class valueClass = value.getClass();
+        Class<?> valueClass = value.getClass();
         List<Field> campos = getCampos(valueClass);
         List<CampoValor> camposValores = new ArrayList<>();
         campos.stream().forEach((campo) -> {

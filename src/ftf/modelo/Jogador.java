@@ -1,8 +1,10 @@
 package ftf.modelo;
 
+import ftf.persistencia.BolsaJogadorService;
 import ftf.persistencia.JogadorService;
 import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tabela(nome = "jogadores")
@@ -10,7 +12,10 @@ public class Jogador extends Criatura {
     
     @NaoMapear
     private final JogadorService jogadorService = JogadorService.getInstance();
-
+    
+    @NaoMapear
+    private final BolsaJogadorService bjs = BolsaJogadorService.getInstance();
+    
     private Usuario usuario;
     
     private Integer dinheiro;
@@ -18,12 +23,16 @@ public class Jogador extends Criatura {
     private Integer nivel;
     private Arma arma;
     private Escudo escudo;
+    
+    @NaoMapear
     private List<Item> bolsa;
     
     {
         dinheiro
                 = experiencia = 0;
         nivel = 1;
+        
+        bolsa = new ArrayList<>();
     }
     
     public Usuario getUsuario() {
@@ -75,9 +84,7 @@ public class Jogador extends Criatura {
     }
 
     public List<Item> getBolsa() {
-        if(bolsa != null){
-            
-        }
+        bolsa = bjs.getBolsa(this);
         return bolsa;
     }
     
@@ -96,6 +103,13 @@ public class Jogador extends Criatura {
     @Override
     public void salvar() {
         jogadorService.salvar(this);
+        
+        if (getId() == null) {
+            Jogador jogador = jogadorService.getJogadorPorNome(getNome());
+            setId(jogador.getId());
+        }
+        
+        bjs.salvarBolsa(bolsa, this);
     }
 
     @Override

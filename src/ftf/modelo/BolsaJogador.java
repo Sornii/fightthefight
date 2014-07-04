@@ -1,13 +1,30 @@
 package ftf.modelo;
 
+import ftf.persistencia.BolsaJogadorService;
+import ftf.persistencia.annotation.NaoMapear;
 import ftf.persistencia.annotation.Tabela;
 
 @Tabela(nome = "jogadores_itens")
-public class BolsaJogador {
+public class BolsaJogador extends Model {
+    
+    @NaoMapear
+    private final BolsaJogadorService bolsaService = BolsaJogadorService.getInstance();
     
     private Jogador jogador;
     private Item item;
-    private String desc;
+    private String descriminador;
+    
+    {
+        descriminador = "";
+    }
+
+    public BolsaJogador() {
+    }
+
+    public BolsaJogador(Jogador jogador, Item item) {
+        this.jogador = jogador;
+        this.item = item;
+    }
 
     public Jogador getJogador() {
         return jogador;
@@ -25,11 +42,19 @@ public class BolsaJogador {
         this.item = item;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescriminador() {
+        return descriminador;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescriminador(String descriminador) {
+        this.descriminador = descriminador;
+    }
+
+    @Override
+    public void salvar() {
+        if (descriminador.isEmpty()) {
+            descriminador =  Item.class.getSimpleName();
+        }
+        bolsaService.salvar(this);
     }
 }

@@ -17,7 +17,7 @@ public class Usuario extends Model {
 
     private String nome;
     private String senha;
-    
+
     @NaoMapear
     private List<Jogador> jogadores;
 
@@ -48,9 +48,6 @@ public class Usuario extends Model {
     }
 
     public List<Jogador> getJogadores() {
-        if (jogadores == null) {
-            return jogadorService.getJogadores(this);
-        }
-        return jogadores;
+        return jogadorService.getJogadores(this);
     }
 }

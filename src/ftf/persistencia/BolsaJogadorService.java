@@ -22,15 +22,19 @@ public class BolsaJogadorService extends BaseService<BolsaJogador> {
         return getCustomListagem("jogador_id = " + jogador.getId());
     }
     
-    public List<Item> getBolsa(Jogador jogador) {
+    public List<Item> convertBolsas(List<BolsaJogador> bolsas) {
         List<Item> itens = new ArrayList<>();
         
-        List<BolsaJogador> bolsas = getBolsas(jogador);
         bolsas.forEach((bolsa) -> {
             itens.add(bolsa.getItem());
         });
         
         return itens;
+    }
+    
+    public List<Item> getBolsa(Jogador jogador) {
+        List<BolsaJogador> bolsas = getBolsas(jogador);
+        return convertBolsas(bolsas);
     }
     
     public void salvarBolsa(List<Item> itens, Jogador jogador){
@@ -39,10 +43,4 @@ public class BolsaJogadorService extends BaseService<BolsaJogador> {
         });
     }
     
-    public static void main(String[] args) {
-        Jogador j  = JogadorService.getInstance().getJogadorPorNome("Lopucura");
-        j.getBolsa().forEach((item) -> {
-            System.out.println(item.getNome());
-        });
-    }
 }

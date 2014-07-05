@@ -53,7 +53,7 @@ public class BolsaJogador extends Model {
     @Override
     public void salvar() {
         if (descriminador.isEmpty()) {
-            descriminador =  Item.class.getSimpleName();
+            descriminador =  item.getClass().getSimpleName();
         }
         bolsaService.salvar(this);
     }

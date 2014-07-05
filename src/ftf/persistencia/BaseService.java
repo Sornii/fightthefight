@@ -1,5 +1,8 @@
 package ftf.persistencia;
 
+import ftf.modelo.Arma;
+import ftf.modelo.Escudo;
+import ftf.modelo.Item;
 import ftf.modelo.Model;
 import ftf.persistencia.util.CampoValor;
 import ftf.persistencia.util.ClassUtil;
@@ -12,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class BaseService<T extends Model> {
@@ -32,10 +34,6 @@ public class BaseService<T extends Model> {
         String campo = campoValor[0];
         String valor = campoValor[1];
 
-        String comando = ComandosSqlUtil.SQL_INSERT.getComando();
-        String format = String.format(comando, ClassUtil.getNomeTabela(thisClass), campo, valor);
-        System.out.println(format);
-
         T auxValue = getUnico(value.getId());
 
         try {
@@ -46,8 +44,15 @@ public class BaseService<T extends Model> {
                 Statement stmt = connection.createStatement();
                 stmt.executeUpdate(formatUpdate);
             } else {
+                String comando = ComandosSqlUtil.SQL_INSERT.getComando();
+                String format = String.format(comando, ClassUtil.getNomeTabela(thisClass), campo, valor);
+                System.out.println(format);
                 Statement stmt = connection.createStatement();
-                stmt.executeUpdate(format);
+                stmt.executeUpdate(format, stmt.RETURN_GENERATED_KEYS);
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    value.setId(rs.getInt(1));
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -69,13 +74,16 @@ public class BaseService<T extends Model> {
             novaInstancia = cls.newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {
             System.out.println("Não foi possível construir uma instância");
+            return null;
         }
 
         List<Field> fields = ClassUtil.getCampos(cls);
         for (Field field : fields) {
 
             String setMethod = ClassUtil.getMethodSet(field.getName());
+
             Class<?> fieldClass = field.getType();
+            Class<?> aux;
 
             try {
                 if (fieldClass == Integer.class) {
@@ -86,7 +94,21 @@ public class BaseService<T extends Model> {
                     String string = resultSet.getString(field.getName());
                     Method method = cls.getMethod(setMethod, String.class);
                     method.invoke(novaInstancia, string);
-                } else if (fieldClass.getSuperclass().equals(Model.class)) {
+                } else if (fieldClass.equals(Item.class)) {
+                    String descriminador = resultSet.getString("descriminador");
+                    Integer itemId = resultSet.getInt("item_id");
+                    Method method = cls.getMethod(setMethod, Item.class);
+                    switch (descriminador) {
+                        case "Arma":
+                            T arma = getUnico(itemId, (Class<T>) Arma.class);
+                            method.invoke(novaInstancia, arma);
+                            break;
+                        case "Escudo":
+                            T escudo = getUnico(itemId, (Class<T>) Escudo.class);
+                            method.invoke(novaInstancia, escudo);
+                            break;
+                    }
+                } else {
                     T unicoGot = montarUnicoChild(resultSet, (Class<T>) fieldClass);
                     Method method = cls.getMethod(setMethod, fieldClass);
                     method.invoke(novaInstancia, unicoGot);
@@ -186,14 +208,17 @@ public class BaseService<T extends Model> {
     private String getUpdateValores(List<CampoValor> camposValores) {
         String updateValores = "";
 
-        for (Iterator<CampoValor> it = camposValores.iterator(); it.hasNext();) {
-            CampoValor campoValor = it.next();
-            String set = campoValor.getCampo() + "=" + campoValor.getValorString();
-            updateValores += set;
-            if (it.hasNext()) {
-                updateValores += ", ";
+        for (CampoValor campoValor : camposValores) {
+
+            String valorcampo = campoValor.getValorString();
+            if (valorcampo == null) {
+                continue;
             }
+            String set = campoValor.getCampo() + "=" + valorcampo;
+            updateValores += set + ", ";
         }
+
+        updateValores = updateValores.substring(0, updateValores.length() - 2);
 
         return updateValores;
     }
@@ -209,13 +234,13 @@ public class BaseService<T extends Model> {
                 valores += campoValor.getValorString() + ", ";
             }
         }
-        
+
         if (campos.length() > 0) {
             int tamanho = campos.length();
             campos = campos.substring(0, tamanho - 2);
         }
-        
-        if(valores.length() > 0) {
+
+        if (valores.length() > 0) {
             int tamanho = valores.length();
             valores = valores.substring(0, tamanho - 2);
         }

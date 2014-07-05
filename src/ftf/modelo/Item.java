@@ -9,6 +9,7 @@ public abstract class Item extends Model {
 
     {
         preco = 0;
+        nome = "";
     }
 
     public String getNome() {

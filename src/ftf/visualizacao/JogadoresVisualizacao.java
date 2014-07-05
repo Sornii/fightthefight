@@ -16,8 +16,6 @@ import javax.swing.DefaultListModel;
  */
 public class JogadoresVisualizacao extends javax.swing.JFrame {
 
-    List<Jogador> jogadores = Sessao.usuario.getJogadores();
-
     /**
      * Creates new form JogadoresVisualizacao
      */
@@ -28,6 +26,7 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
     
     private void atualizarLista(){ 
         DefaultListModel<Jogador> listModel = new DefaultListModel<>();
+        List<Jogador> jogadores = Sessao.usuario.getJogadores();
         jogadores.forEach((jogador)-> listModel.addElement(jogador));
         listJogadores.setModel(listModel);
     }
@@ -130,11 +129,13 @@ public class JogadoresVisualizacao extends javax.swing.JFrame {
 
     private void btnCarregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCarregarActionPerformed
         Sessao.jogador = (Jogador) listJogadores.getSelectedValue();
+        HomeVisualizacao homeVisualizacao = new HomeVisualizacao();
+        homeVisualizacao.setVisible(true);
         dispose();
     }//GEN-LAST:event_btnCarregarActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        dispose();
+        System.exit(0);
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

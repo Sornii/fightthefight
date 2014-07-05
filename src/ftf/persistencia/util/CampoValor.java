@@ -34,6 +34,10 @@ public class CampoValor {
     }
 
     public String getValorString() {
+        if (valor == null) {
+            return null;
+        }
+        
         if (valor instanceof String) {
             String v = (String) this.valor;
             return "'" + v + "'";

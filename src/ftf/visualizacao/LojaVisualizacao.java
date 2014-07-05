@@ -8,6 +8,7 @@ package ftf.visualizacao;
 
 import ftf.modelo.Item;
 import ftf.modelo.Jogador;
+import ftf.persistencia.ItemService;
 import ftf.sessao.Sessao;
 import javax.swing.DefaultListModel;
 
@@ -17,6 +18,8 @@ import javax.swing.DefaultListModel;
  */
 public class LojaVisualizacao extends javax.swing.JFrame {
 
+    private final ItemService itemService = ItemService.getInstance();
+    
     /**
      * Creates new form LojaVisualizacao
      */
@@ -31,7 +34,11 @@ public class LojaVisualizacao extends javax.swing.JFrame {
         });
         listBolsa.setModel(itensVender);
         
-        
+        DefaultListModel<Item> itensLoja = new DefaultListModel<>();
+        itemService.getItensOrdernadoPreco().forEach((item) -> {
+            itensLoja.addElement(item);
+        });
+        listLoja.setModel(itensLoja);
     }
 
     /**
@@ -52,7 +59,7 @@ public class LojaVisualizacao extends javax.swing.JFrame {
         btnVender = new javax.swing.JButton();
         btnComprar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         listBolsa.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -129,7 +136,15 @@ public class LojaVisualizacao extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnComprarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprarActionPerformed
-        // TODO add your handling code here:
+        Item itemComprado = (Item) listLoja.getSelectedValue();
+        Jogador jogador = Sessao.jogador;
+        
+        if (jogador.getDinheiro() >= itemComprado.getPreco()) {
+            jogador.setDinheiro(jogador.getDinheiro() - itemComprado.getPreco());
+            jogador.adicionarBolsa(itemComprado);
+        }
+        
+        jogador.salvar();
     }//GEN-LAST:event_btnComprarActionPerformed
 
     /**

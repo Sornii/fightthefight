@@ -36,7 +36,4 @@ public class ItemService extends BaseService<Item> {
         return ordenarItens.sortedCopy(itens);
     }
     
-    public static void main(String[] args) {
-        instance.getItensOrdernadoPreco().forEach((item) -> System.out.println(item.getNome()));
-    }
 }

@@ -27,6 +27,9 @@ public class Jogador extends Criatura {
     @NaoMapear
     private List<Item> bolsa;
     
+    @NaoMapear
+    private List<BolsaJogador> _bolsa;
+    
     {
         dinheiro
                 = experiencia = 0;
@@ -84,7 +87,8 @@ public class Jogador extends Criatura {
     }
 
     public List<Item> getBolsa() {
-        bolsa = bjs.getBolsa(this);
+        _bolsa = bjs.getBolsas(this);
+        bolsa = bjs.convertBolsas(_bolsa);
         return bolsa;
     }
     
@@ -94,10 +98,20 @@ public class Jogador extends Criatura {
     
     public void adicionarBolsa(Item item) {
         bolsa.add(item);
+        _bolsa.add(new BolsaJogador(this, item));
     }
     
     public void removerBolsa(Item item){
         bolsa.remove(item);
+        /*_bolsa.remove(_bolsa.stream().findFirst().filter((BolsaJogador t) -> {
+        return t.getItem().equals(item);
+        }).get());*/
+        for(BolsaJogador bols : _bolsa){
+            if (bols.getItem().equals(item)) {
+                _bolsa.remove(bols);
+                break;
+            }
+        }
     }
     
     @Override
@@ -105,11 +119,14 @@ public class Jogador extends Criatura {
         jogadorService.salvar(this);
         
         if (getId() == null) {
-            Jogador jogador = jogadorService.getJogadorPorNome(getNome());
+            Jogador jogador = jogadorService.getJogador(getNome());
             setId(jogador.getId());
         }
         
-        bjs.salvarBolsa(bolsa, this);
+        //bjs.salvarBolsa(bolsa, this);
+        _bolsa.forEach((b) -> {
+            b.salvar();
+        });
     }
 
     @Override
